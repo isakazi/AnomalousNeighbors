@@ -329,21 +329,16 @@ def load_vgrnn(dataset):
 
 
 ####### WITH WEIGHTS ######
-def load_gc_data(dataset, num_nodes=22234):
-    # print('in load gc 14')
-    datasets = ['gc']
-    assert dataset in datasets, \
-        "Dataset %s not in allowed list: %s" % (dataset, str(datasets))
-
-    adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
-    dense_adj_list = []
-    with open(adj, 'rb') as f:
+def load_gc_data(dataset_path, num_nodes=22234):
+    print('in load gc 14')
+    # adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+    # dense_adj_list = []
+    with open(dataset_path, 'rb') as f:
         dense_adj_list = pickle.load(f)
     # num_nodes = max([torch.unique(dense_adj_list[i]).size(0) for i in range(len(dense_adj_list))])
-    num_nodes = 22234  # 24157 #5124 # 6177 # 12091 #13660 #8878#79772 #1323 #59662 # 17160 #59662 # 26008 #7827 # 4276 #58387 #4276 #2442
+    # num_nodes = 22234  # 24157 #5124 # 6177 # 12091 #13660 #8878#79772 #1323 #59662 # 17160 #59662 # 26008 #7827 # 4276 #58387 #4276 #2442
     # num_nodes = max([dense_adj_list[i].size(0) for i in range(len(dense_adj_list))])
     eis = []
-    ews = []
     ews_before = []
     splits = []
 

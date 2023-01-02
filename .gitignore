@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 .idea/
+
+data/adj_orig_dense_list.pickle

@@ -1,7 +1,7 @@
 import torch
 from torch_geometric.utils import dense_to_sparse, to_dense_adj, remove_self_loops
 
-from score_utils import fast_negative_sampling
+from .score_utils import fast_negative_sampling
 import gc
 
 # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -13,7 +13,7 @@ import gc
 # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 '''
-Assumes edge indices have already been masked
+Assumes edge indices have already been mask ed
 Literally just generates negative samples given a list of
 true positive samples. Doesn't even need embeddings bc assumes
 user already has those and the order doesn't change
