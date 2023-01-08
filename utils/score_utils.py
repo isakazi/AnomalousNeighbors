@@ -72,32 +72,19 @@ torch geo method)
 
 
 def fast_negative_sampling(edge_list, batch_size, num_nodes, oversample=1.25):
-    # print('updated!')
     el_hash = lambda x: x[0, :] + x[1, :] * num_nodes
 
     el1d = el_hash(edge_list).numpy()
     neg = np.array([[], []])
-    # my_list = [403, 2788, 1116, 415, 520, 856]
     while (neg.shape[1] < batch_size):
         maybe_neg = np.random.randint(0, num_nodes, (2, int(batch_size * oversample)))
-        # for dest in my_list:
-        #     maybe_neg = np.append(maybe_neg.transpose(), [[1245, dest]], axis=0).transpose()
-        # while 1245 not in maybe_neg:
-        # print('still waiting')
-        # maybe_neg = np.random.randint(0,num_nodes, (2, int(batch_size*oversample)))
-        # maybe_neg = np.append(maybe_neg.transpose(), [[1245, 403]], axis=0).transpose()
-
         maybe_neg = maybe_neg[:, maybe_neg[0] != maybe_neg[1]]  # remove self-loops
         neg_hash = el_hash(maybe_neg)
         neg = np.concatenate(
             [neg, maybe_neg[:, ~np.in1d(neg_hash, el1d)]],
             axis=1
         )
-        # print(np.isin(neg.transpose(), [1245,403]).nonzero())
 
-    # May have gotten some extras
-    # neg = neg[:, :batch_size]
-    # if not ret_all:
     neg = neg[:, neg.shape[1] - batch_size:]
     return torch.tensor(neg).long()
 
@@ -109,7 +96,6 @@ Returns the threshold that achieves optimal TPR and FPR
 Does this by checking where the TPR and FPR cross each other
 as the threshold changes (abs of TPR-(1-FPR))
 
-Please do this on TRAIN data, not TEST -- you cheater
 '''
 
 
@@ -129,6 +115,6 @@ def get_optimal_cutoff(pscore, nscore, fw=0.5):
     fn = np.abs(tw * tpr - fw * (1 - fpr))
     best = np.argmin(fn, 0)
 
-    print("Optimal cutoff %0.4f achieves TPR: %0.2f FPR: %0.2f on train data"
-          % (th[best], tpr[best], fpr[best]))
+    # print("Optimal cutoff %0.4f achieves TPR: %0.2f FPR: %0.2f on train data"
+    #       % (th[best], tpr[best], fpr[best]))
     return th[best]

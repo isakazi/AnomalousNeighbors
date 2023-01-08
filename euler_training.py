@@ -31,7 +31,6 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
     best = (0, None)
     no_improvement = 0
     ew_fn = data.tr_attributes
-    # ew_fn = None
 
     for e in range(epochs):
         model.train()
@@ -40,7 +39,6 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
 
         # Get embedding
         zs = model(data.x, data.eis, data.tr, ew_fn=ew_fn)[:end_tr]
-        # zs = model(data.x, data.eis[:end_tr], data.tr, ew_fn=ew_fn) #[:end_tr]
 
         if not pred:
             p, n, z = g.link_detection(data, data.tr, zs, nratio=nratio)
@@ -48,20 +46,16 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
         else:
             p, n, z = g.link_prediction(data, data.tr, zs, nratio=nratio)
 
-            # print('after link prediction', e)
         loss = model.loss_fn(p, n, z)
-        # print('after loss prediction', e)
         loss.backward()
         opt.step()
 
-        # Done by VGRNN to improve convergence
         torch.nn.utils.clip_grad_norm_(model.parameters(), 10)
 
         trloss = loss.item()
         with torch.no_grad():
             model.eval()
             zs = model(data.x, data.eis, data.tr, ew_fn=ew_fn)[:end_tr]
-            # zs = model(data.x, data.eis[:end_tr], data.tr, ew_fn=ew_fn)#[:end_tr]
 
             if not pred:
                 p, n, z = g.link_detection(data, data.va, zs)
@@ -86,16 +80,6 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
                     end=''
                 )
 
-                #                 dp,dn,dz = g.new_link_prediction(data, data.va, zs)
-                #                 dt, df = model.score_fn(dp,dn,dz)
-                #                 dnscores = get_score(dt, df)
-
-                #                 print(
-                #                     '[%d] Loss: %0.4f  \n\tPr  %s  \n\tNew %s' %
-                #                     (e, trloss, fmt_score(dscores), fmt_score(dnscores) ),
-                #                     end=''
-                #                 )
-
                 avg = (
                         dscores[0] + dscores[1]
                 )
@@ -105,12 +89,8 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
                 best = (avg, deepcopy(model))
                 no_improvement = 0
 
-            # Log any epoch with no progress on val set; break after
-            # a certain number of epochs
             else:
                 print()
-                # Though it's not reflected in the code, the authors for VGRNN imply in the
-                # supplimental material that after 500 epochs, early stopping may kick in
                 if e > 100:
                     no_improvement += 1
                 if no_improvement == PATIENCE:
@@ -118,7 +98,6 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
                     break
 
     model = best[1]
-    # with open(f'/home/AnomalousNeighbors/gc_model_all_nodes_pred_{str(1 + num_test)}.pkl', 'wb') as handle:
     with open(output_path + '/gc_model.pkl', 'wb')as handle:
         pickle.dump(model, handle)
     with torch.no_grad():
@@ -131,9 +110,7 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
         # Transductive
         else:
             ew_fn = data.all_attributes
-            # ew_fn=None
             zs = model(data.x, data.eis, data.all, ew_fn)[end_tr - 1:]
-            # zs = model(data.x, data.eis, data.all, ew_fn)[end_tr-1:]
 
         if not pred:
             zs = zs[1:]
@@ -154,10 +131,7 @@ def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, n
             p, n, z = g.link_prediction(data, data.all, zs, start=end_tr - 1)
             t, f = model.score_fn(p, n, z)
             dscores = get_score(t, f)
-
-            # p,n,z = g.new_link_prediction(data, data.all, zs, start=end_tr-1)
-            # t, f = model.score_fn(p,n,z)
-            nscores = dscores  # get_score(t, f)
+            nscores = dscores
 
             print(
                 '''

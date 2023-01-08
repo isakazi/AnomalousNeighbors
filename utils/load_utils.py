@@ -40,13 +40,3 @@ def edge_tv_split(ei, v_size=0.05):
     masks[0, rnd[val:]] = True
 
     return masks[0], masks[1]
-
-
-def std_edge_w(ew_ts):
-    ews = []
-    for ew_t in ew_ts:
-        ew_t = ew_t.float()
-        ew_t = (ew_t.long() / ew_t.std()).long()
-        ew_t = torch.sigmoid(ew_t)
-        ews.append(ew_t)
-    return ews

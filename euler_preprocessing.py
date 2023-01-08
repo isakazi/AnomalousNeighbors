@@ -52,8 +52,6 @@ if __name__ == '__main__':
     df_only_known['source_node_id_idx'] = df_only_known['source_node_id'].apply(lambda s: node_to_idx[s])
     df_only_known['destination_node_id_idx'] = df_only_known['destination_node_id'].apply(lambda s: node_to_idx[s])
     df_only_known['flow_node_id_idx'] = df_only_known['flow_node_id'].apply(lambda s: node_to_idx[s])
-    # df_only_known.to_csv(args.output + '/test_set_preprocessed_wtf.csv',
-    #                                                             encoding='utf-8', index=False)
     graphs = Preprocessing.get_graph_per_date(df_only_known, node_to_idx.values())
     matrices = Preprocessing.matrix_generation(graphs)
     output_file = args.output + '/' + 'adj_orig_dense_list.pkl'

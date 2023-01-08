@@ -6,7 +6,6 @@ import pandas as pd
 from utils.score_utils import get_score, get_optimal_cutoff
 import utils.load_euler as vd
 from utils import generators
-from multiprocessing import Pool
 
 
 if __name__ == '__main__':

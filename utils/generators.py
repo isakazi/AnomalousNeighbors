@@ -54,8 +54,7 @@ def link_detection(data, partition_fn, zs, start=0, end=None,
     for t in range(start, end):
         ei = tp = partition_fn(t)
 
-        # Also avoid edges from training set (assuming this is val or test
-        # calling the function)
+        # Also avoid edges from training set (assuming this is val or test calling the function)
         if include_tr:
             ei = torch.cat([ei, data.tr(t)], dim=1)
 
@@ -79,7 +78,6 @@ def link_prediction(data, partition_fn, zs, start=0, end=None,
         include_tr, batched, nratio
     )
 
-    # print(p[0].shape, p[1].shape, p[2].shape)
     p = p[1:]
     n = n[1:]
     z = z[:-1]
@@ -92,20 +90,6 @@ Using embeddings from timestep t, predict links in timestep t+1
 same as link prediction, just offset edge lists and embeddings by -1
 '''
 
-
-def link_prediction_2(data, partition_fn, zs, start=0, end=None,
-                      include_tr=True, batched=False, nratio=1):
-    # Uses every edge in the next snap shot, so no partition fn needed
-    p, n, z = link_detection(
-        data, partition_fn, zs, start, end,
-        include_tr, batched, nratio
-    )
-
-    # p = p[1:]
-    # n = n[1:]
-    # z = z[:-1]
-
-    return p, n, z
 
 
 '''

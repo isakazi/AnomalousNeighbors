@@ -2,7 +2,6 @@ import argparse
 from datetime import datetime
 from google.cloud import bigquery
 from google.oauth2 import service_account
-# import google.cloud
 import pandas as pd
 
 projects = {"dev-us": "guardicore-68957042", "warehouse-prod":"guardicore-82669935"}
@@ -59,8 +58,6 @@ if __name__ == '__main__':
     print('got query results successfully')
     df = query_results.to_dataframe()
     print('converted to dataframe successfully')
-    # print(df.shape)
-    # print(df.head(1))
     output_path = args.output
     dates = args.start_date + '_' + args.end_date
     df.to_csv(f'{output_path}/{customer_table_id}-{dates}.csv', encoding='utf-8', index=False)

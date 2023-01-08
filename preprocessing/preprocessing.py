@@ -12,25 +12,15 @@ class Preprocessing(object):
     def load_dataframe(df_path, iana_path):
         dtypes = {
             'source_node_id': 'string',
-            # 'source_node_type': 'string',
             'source_ip': 'string',
             'source_username': 'string',
-            # 'source_process': 'string',
-            # 'source_process_id': 'string',
             'source_process_name': 'string',
-            # 'source_process_full_path': 'string',
             'destination_node_id': 'string',
-            # 'destination_node_type': 'string',
             'destination_ip': 'string',
             'destination_port': int,
             'destination_domain': 'string',
-            # 'destination_process': 'string',
-            # 'destination_process_id': 'string',
             'destination_process_name': 'string',
-            # 'destination_process_full_path': 'string',
             'connection_type': 'string',
-            # 'flow_id': 'string',
-            # 'ip_protocol': 'string',
             'sample_datetime': 'string'
         }
         df = pd.read_csv(df_path, header=0, dtype=dtypes)
@@ -40,7 +30,6 @@ class Preprocessing(object):
         iana_list = iana_list.union(known_ports)
         df['destination_port_mapped'] = df['destination_port'].apply(lambda p: p if p in iana_list else -1)
         print('done port mapping')
-        # df_only_known = Preprocessing.preprocess_dataframe(df.fillna('NA'), True)
         return df
 
     @staticmethod
@@ -63,13 +52,11 @@ class Preprocessing(object):
                                     source='source_node_id_idx',
                                     target='flow_node_id_idx',
                                     edge_attr=['connection_type'],
-                                    # edge_attr = ['source_process_name_idx', 'destination_port', 'connection_type_int'],
                                     create_using=nx.DiGraph)
         H = nx.from_pandas_edgelist(df,
                                     source='flow_node_id_idx',
                                     target='destination_node_id_idx',
                                     edge_attr=['connection_type'],
-                                    # edge_attr = ['source_process_name_idx', 'destination_port', 'connection_type_int'],
                                     create_using=nx.DiGraph)
 
         return nx.compose(G, H)
@@ -80,7 +67,6 @@ class Preprocessing(object):
         print(sample_dates)
         graphs = []
 
-        # # source_node_id_idx destination_node_id_idx source_process_name_idx
         for date in sample_dates:
             h = Preprocessing.get_graph_with_attributes(df[df['sample_datetime'] == date])
             g = nx.DiGraph((nx.induced_subgraph(h, nodes)))
