@@ -6,9 +6,8 @@ import pandas as pd
 from utils.score_utils import get_score, get_optimal_cutoff
 import utils.load_euler as vd
 from utils import generators
+from multiprocessing import Pool
 
-def evaluate(model_path):
-    pass
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -37,7 +36,7 @@ if __name__ == '__main__':
         '-w', '--false_positive_weight',
         type=float,
         action='store',
-        default=0.9,
+        default=0.95,
         help='false positive weight, in the range of (0,1), higher values result in fewer FPs (with the risk of fewer TPs as well)'
     )
     # parser.add_argument(
@@ -47,10 +46,10 @@ if __name__ == '__main__':
     # )
     parser.add_argument(
         '-t',
-        '--test_index',
+        '--test_size',
         type=int,
         action='store',
-        default=0,
+        default=1,
         help='test data start index'
     )
 
@@ -80,11 +79,11 @@ if __name__ == '__main__':
         idx_to_node = pickle.load(handle)
     with torch.no_grad():
         gc_model.eval()
-        TEST_TS = args.test_index
+        TEST_TS = args.test_size
         # print(f'all: {data.T}, end_tr:{data.T - TEST_TS}')
-        print(f'all: {data.T}, end_tr:{TEST_TS}')
-        # end_tr = data.T - TEST_TS
-        end_tr = TEST_TS
+        end_tr = data.T - TEST_TS
+        print(f'all: {data.T}, end_tr:{end_tr}')
+        # end_tr = TEST_TS
 
         # zs = gc_model(data.x, data.eis, data.tr)[end_tr-1:]
 
@@ -100,6 +99,7 @@ if __name__ == '__main__':
     mask = t < my_optimal_cutoff
     suspected_entries = mask.nonzero().cpu().detach().numpy()
     indices = [l for i in suspected_entries.tolist() for l in i]
+    print(len(indices))
     sources = []
     destinations = []
     dest_ports = []
@@ -113,9 +113,29 @@ if __name__ == '__main__':
         scores.append(t[i].item())
         # print(id_1, id_2, '\n', idx_to_node[id_1], idx_to_node[id_2])
     delimiter = '!!!'
-    print(len(sources), len(destinations))
     dfs = []
     print('start')
+    source_port_process_dest=[]
+    print(len(sources), len(destinations))
+    # for source, dest in zip(sources, destinations):
+    #     if delimiter in source:
+    #         process, port = source.split(delimiter)
+    #         port = int(port)
+    #         asset = dest
+    #     elif delimiter in dest:
+    #         process, port = dest.split(delimiter)
+    #         port = int(port)
+    #         asset = source
+    #     source_port_process_dest.append((asset, process, port))
+    #
+    # source_port_process_dest = list(set(source_port_process_dest))
+    # df_1 = df_test[
+    #     df_test[["source_node_id", "source_process_name", "destination_port_mapped"]].apply(
+    #         tuple, 1).isin(source_port_process_dest)]
+    # df_2 = df_test[
+    #     df_test[["destination_node_id", "source_process_name", "destination_port_mapped"]].apply(
+    #         tuple, 1).isin(source_port_process_dest)]
+
     for source, dest in zip(sources, destinations):
         if delimiter in source and delimiter not in dest:
             s = source.split(delimiter)[0]
@@ -144,13 +164,18 @@ if __name__ == '__main__':
         else:
             dfs.append(my_df)
             my_df = None
-    print('end')
+    # final_df = pd.concat([df_1, df_2])
     final_df = pd.concat(dfs)
+    print('end')
+    print(final_df.shape)
     print(final_df.drop_duplicates().shape)
-    final_df.drop_duplicates().to_csv(args.output+'/detections.csv', encoding='utf-8', index=False)
+    final_df.drop_duplicates().to_csv(args.output+'/detections2.csv', encoding='utf-8', index=False)
 
 
 
+# [-1,2,3,-2,3,4]
+
+# [-2,-1,2,3,3,4]
 
 
 

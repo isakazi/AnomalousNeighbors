@@ -22,7 +22,7 @@ TEST_TS = 1
 fmt_score = lambda x : 'AUC: %0.4f AP: %0.4f' % (x[0], x[1])
 
 
-def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, num_test=0):
+def train(model, data, output_path, epochs=2, pred=False, nratio=1, lr=0.01, num_test=0):
     print(f'lr:{lr}, epochs: {epochs}')
     end_tr = data.T - TEST_TS
 

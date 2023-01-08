@@ -145,3 +145,5 @@ test.py
 
 output/*.pkl
 output/*.backup
+
+anomalousneighbors/*

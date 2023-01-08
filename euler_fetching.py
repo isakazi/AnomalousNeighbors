@@ -59,8 +59,8 @@ if __name__ == '__main__':
     print('got query results successfully')
     df = query_results.to_dataframe()
     print('converted to dataframe successfully')
-    print(df.shape)
-    print(df.head(1))
+    # print(df.shape)
+    # print(df.head(1))
     output_path = args.output
     dates = args.start_date + '_' + args.end_date
     df.to_csv(f'{output_path}/{customer_table_id}-{dates}.csv', encoding='utf-8', index=False)
