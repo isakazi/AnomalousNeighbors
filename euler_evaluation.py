@@ -50,7 +50,7 @@ if __name__ == '__main__':
         type=int,
         action='store',
         default=1,
-        help='test data start index'
+        help='test size, how many days from the end backwards are evaluated for (currently supporting evaluation for last day only, so do not change this)'
     )
 
     parser.add_argument(
@@ -67,6 +67,7 @@ if __name__ == '__main__':
         help='directory where output is stored'
     )
     args = parser.parse_args()
+    assert args.test_size == 1
     with open(args.model, 'rb') as handle:
         gc_model = pickle.load(handle)
     df_test=pd.read_csv(args.csv_file, header=0)
@@ -113,63 +114,64 @@ if __name__ == '__main__':
         scores.append(t[i].item())
         # print(id_1, id_2, '\n', idx_to_node[id_1], idx_to_node[id_2])
     delimiter = '!!!'
-    dfs = []
     print('start')
     source_port_process_dest=[]
     print(len(sources), len(destinations))
-    # for source, dest in zip(sources, destinations):
-    #     if delimiter in source:
-    #         process, port = source.split(delimiter)
-    #         port = int(port)
-    #         asset = dest
-    #     elif delimiter in dest:
-    #         process, port = dest.split(delimiter)
-    #         port = int(port)
-    #         asset = source
-    #     source_port_process_dest.append((asset, process, port))
-    #
-    # source_port_process_dest = list(set(source_port_process_dest))
-    # df_1 = df_test[
-    #     df_test[["source_node_id", "source_process_name", "destination_port_mapped"]].apply(
-    #         tuple, 1).isin(source_port_process_dest)]
-    # df_2 = df_test[
-    #     df_test[["destination_node_id", "source_process_name", "destination_port_mapped"]].apply(
-    #         tuple, 1).isin(source_port_process_dest)]
-
     for source, dest in zip(sources, destinations):
-        if delimiter in source and delimiter not in dest:
-            s = source.split(delimiter)[0]
-            p = source.split(delimiter)[1]
-            my_df = df_test[(df_test['source_node_id'] == dest)
-                            & (df_test['destination_port_mapped'] == int(p))
-                            & (df_test['source_process_name'] == s)]
-            if my_df.shape[0] == 0:
-                my_df = df_test[(df_test['destination_node_id'] == dest)
-                                & (df_test['destination_port_mapped'] == int(p))
-                                & (df_test['source_process_name'] == s)]
-        elif delimiter in dest and delimiter not in source:
-            d = dest.split(delimiter)[0]
-            p = dest.split(delimiter)[1]
-            my_df = df_test[(df_test['source_node_id'] == source)
-                            & (df_test['destination_port_mapped'] == int(p))
-                            & (df_test['source_process_name'] == d)]
-            if my_df.shape[0] == 0:
-                my_df = df_test[(df_test['destination_node_id'] == source)
-                                & (df_test['destination_port_mapped'] == int(p))
-                                & (df_test['source_process_name'] == d)]
-        else:
-            print('should not happen ', source, ', ', dest)
-        if my_df.shape[0] == 0:
-            print('should not happen')
-        else:
-            dfs.append(my_df)
-            my_df = None
-    # final_df = pd.concat([df_1, df_2])
-    final_df = pd.concat(dfs)
+        if delimiter in source:
+            process, port = source.split(delimiter)
+            port = int(port)
+            asset = dest
+        elif delimiter in dest:
+            process, port = dest.split(delimiter)
+            port = int(port)
+            asset = source
+        source_port_process_dest.append((asset, process, port))
+
+    source_port_process_dest = list(set(source_port_process_dest))
+    df_1 = df_test[
+        df_test[["source_node_id", "source_process_name", "destination_port_mapped"]].apply(
+            tuple, 1).isin(source_port_process_dest)]
+    df_2 = df_test[
+        df_test[["destination_node_id", "source_process_name", "destination_port_mapped"]].apply(
+            tuple, 1).isin(source_port_process_dest)]
+    final_df = pd.concat([df_1, df_2])
+
+    # dfs = []
+    # for source, dest in zip(sources, destinations):
+    #     if delimiter in source and delimiter not in dest:
+    #         s = source.split(delimiter)[0]
+    #         p = source.split(delimiter)[1]
+    #         my_df = df_test[(df_test['source_node_id'] == dest)
+    #                         & (df_test['destination_port_mapped'] == int(p))
+    #                         & (df_test['source_process_name'] == s)]
+    #         if my_df.shape[0] == 0:
+    #             my_df = df_test[(df_test['destination_node_id'] == dest)
+    #                             & (df_test['destination_port_mapped'] == int(p))
+    #                             & (df_test['source_process_name'] == s)]
+    #     elif delimiter in dest and delimiter not in source:
+    #         d = dest.split(delimiter)[0]
+    #         p = dest.split(delimiter)[1]
+    #         my_df = df_test[(df_test['source_node_id'] == source)
+    #                         & (df_test['destination_port_mapped'] == int(p))
+    #                         & (df_test['source_process_name'] == d)]
+    #         if my_df.shape[0] == 0:
+    #             my_df = df_test[(df_test['destination_node_id'] == source)
+    #                             & (df_test['destination_port_mapped'] == int(p))
+    #                             & (df_test['source_process_name'] == d)]
+    #     else:
+    #         print('should not happen ', source, ', ', dest)
+    #     if my_df.shape[0] == 0:
+    #         print('should not happen')
+    #     else:
+    #         dfs.append(my_df)
+    #         my_df = None
+    # final_df = pd.concat(dfs)
+
     print('end')
     print(final_df.shape)
     print(final_df.drop_duplicates().shape)
-    final_df.drop_duplicates().to_csv(args.output+'/detections2.csv', encoding='utf-8', index=False)
+    final_df.drop_duplicates().to_csv(args.output+'/detections.csv', encoding='utf-8', index=False)
 
 
 
