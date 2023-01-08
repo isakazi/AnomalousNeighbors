@@ -1,1 +1,16 @@
 pandas
+db-dtypes
+networkx
+google-cloud-bigquery
+pyg-lib
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.13.0
+torch-scatter
+torch-sparse
+torch-cluster
+torch-spline-conv
+--find-links https://data.pyg.org/whl/torch-1.13.0+cpu.html
+torch-geometric
+
+
+

@@ -14,7 +14,7 @@ def get_score(pscore, nscore):
     ntn = nscore.size(0)
 
     score = torch.cat([pscore, nscore]).numpy()
-    labels = np.zeros(ntp + ntn, dtype=np.long)
+    labels = np.zeros(ntp + ntn, dtype=int)
     labels[:ntp] = 1
 
     ap = average_precision_score(labels, score)
@@ -121,7 +121,7 @@ def get_optimal_cutoff(pscore, nscore, fw=0.5):
     tw = 1 - fw
 
     score = torch.cat([pscore, nscore]).numpy()
-    labels = np.zeros(ntp + ntn, dtype=np.long)
+    labels = np.zeros(ntp + ntn, dtype=int)
     labels[:ntp] = 1
 
     fpr, tpr, th = roc_curve(labels, score, pos_label=1)

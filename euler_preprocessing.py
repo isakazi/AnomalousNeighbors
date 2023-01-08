@@ -1,7 +1,6 @@
-import pandas as pd
 import argparse
 from preprocessing.preprocessing import Preprocessing
-from utils import preprocess_utils
+from preprocessing import preprocess_utils
 import pickle
 
 def get_ids_set(df):
@@ -31,9 +30,13 @@ if __name__ == '__main__':
         help='directory where output is stored'
     )
     args = parser.parse_args()
-    df = Preprocessing.load_dataframe(args.file, args.iana)
-    print('loaded dataframe successfully')
     train_end_date = args.date
+    df_init = Preprocessing.load_dataframe(args.file, args.iana)
+    print('loaded dataframe successfully')
+
+    df_init[df_init['sample_datetime']> train_end_date].to_csv(args.output+'/test_set_preprocessed.csv', encoding='utf-8', index=False)
+    df = Preprocessing.preprocess_dataframe(df_init.fillna('NA'), True)
+    print('preprocessed dataframe successfully')
     df_train = df[df['sample_datetime'] <= train_end_date]
     df_test = df[df['sample_datetime'] > train_end_date]
 
@@ -42,8 +45,6 @@ if __name__ == '__main__':
 
     diff = df_test_ids.difference(df_train_ids)
 
-    # len(diff)
-
     df_only_known = df[(df['sample_datetime'] <= train_end_date)
                        | ((~df['source_node_id'].isin(diff)) & (~df['destination_node_id'].isin(diff)))]
 
@@ -51,8 +52,16 @@ if __name__ == '__main__':
     df_only_known['source_node_id_idx'] = df_only_known['source_node_id'].apply(lambda s: node_to_idx[s])
     df_only_known['destination_node_id_idx'] = df_only_known['destination_node_id'].apply(lambda s: node_to_idx[s])
     df_only_known['flow_node_id_idx'] = df_only_known['flow_node_id'].apply(lambda s: node_to_idx[s])
+    # df_only_known.to_csv(args.output + '/test_set_preprocessed_wtf.csv',
+    #                                                             encoding='utf-8', index=False)
     graphs = Preprocessing.get_graph_per_date(df_only_known, node_to_idx.values())
     matrices = Preprocessing.matrix_generation(graphs)
-    output_file = args.output + "/" + 'adj_orig_dense_list.pickle'
+    output_file = args.output + '/' + 'adj_orig_dense_list.pkl'
+    node_to_idx_output_file = args.output+ '/' + 'node_to_idx.pkl'
+    idx_to_node_output_file = args.output + '/' + 'idx_to_node.pkl'
+    num_nodes_file=args.output + '/' + 'num_nodes.txt'
+    with open(num_nodes_file, 'w') as handle:
+        handle.write(str(len(node_to_idx)))
     with open(output_file, 'wb') as handle:
         pickle.dump(matrices, handle)
+    preprocess_utils.save_node_to_idx_mapping(node_to_idx_output_file, idx_to_node_output_file, node_to_idx, idx_to_node)

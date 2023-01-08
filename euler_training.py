@@ -22,7 +22,7 @@ TEST_TS = 1
 fmt_score = lambda x : 'AUC: %0.4f AP: %0.4f' % (x[0], x[1])
 
 
-def train(model, data, epochs=3, pred=False, nratio=1, lr=0.01, num_test=0):
+def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, num_test=0):
     print(f'lr:{lr}, epochs: {epochs}')
     end_tr = data.T - TEST_TS
 
@@ -118,7 +118,8 @@ def train(model, data, epochs=3, pred=False, nratio=1, lr=0.01, num_test=0):
                     break
 
     model = best[1]
-    with open(f'/home/AnomalousNeighbors/gc_model_all_nodes_pred_{str(1 + num_test)}.pkl', 'wb') as handle:
+    # with open(f'/home/AnomalousNeighbors/gc_model_all_nodes_pred_{str(1 + num_test)}.pkl', 'wb') as handle:
+    with open(output_path + '/gc_model.pkl', 'wb')as handle:
         pickle.dump(model, handle)
     with torch.no_grad():
         model.eval()
@@ -184,6 +185,13 @@ if __name__ == '__main__':
         help='Input file for the training of Euler'
     )
     parser.add_argument(
+        '-n', '--num_nodes_file',
+        action='store',
+        help='This loads the number of nodes in the training set (cannot be determined from the input because input is'
+             'split by days and some nodes may appear in some days but not in others, so this needs to be provided '
+             'explicitly)'
+    )
+    parser.add_argument(
         '-p', '--predict',
         action='store_true',
         help='Sets model to train on link prediction rather than detection'
@@ -197,6 +205,11 @@ if __name__ == '__main__':
         type=float,
         default=0.02,
         help='Euler learning rate'
+    )
+    parser.add_argument(
+        '-o', '--output',
+        action='store',
+        help='directory where output is stored'
     )
 
     '''
@@ -213,27 +226,22 @@ if __name__ == '__main__':
         | DBLP    | 0.02  | 0.02  | 0.005 | 
         +---------+-------+-------+-------+
     '''
-    parser.add_argument(
-        '--lr',
-        type=float,
-        default=0.02
-    )
 
     args = parser.parse_args()
     outf = 'euler.txt'
-    l = ['enron10', 'fb', 'dblp']
-    l = ['gc']
+    with open(args.num_nodes_file, 'r') as handle:
+        num_nodes = int(handle.readline())
+        print(f'num nodes is: {num_nodes}')
     l = [args.file]
     for d in l:
-        # data = vd.load_vgrnn(d)
-        data = vd.load_gc_data(d)
-        # print(data)
+        data = vd.load_gc_data(d, num_nodes)
         model = EulerGCN(data.x.size(1), 32, 16, lstm=args.lstm)
 
         stats = [
             train(
                 deepcopy(model),
                 data,
+                args.output,
                 pred=args.predict,
                 lr=args.lr,
                 num_test=num_test,

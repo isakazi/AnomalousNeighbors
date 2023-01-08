@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
-import utils.preprocess_utils as preprocess_utils
+import preprocessing.preprocess_utils as preprocess_utils
 import networkx as nx
-import torch
 from torch_geometric.utils.convert import from_scipy_sparse_matrix
 
 class Preprocessing(object):
@@ -41,8 +40,8 @@ class Preprocessing(object):
         iana_list = iana_list.union(known_ports)
         df['destination_port_mapped'] = df['destination_port'].apply(lambda p: p if p in iana_list else -1)
         print('done port mapping')
-        df_only_known = Preprocessing.preprocess_dataframe(df.fillna('NA'), True)
-        return df_only_known
+        # df_only_known = Preprocessing.preprocess_dataframe(df.fillna('NA'), True)
+        return df
 
     @staticmethod
     def preprocess_dataframe(df, add_weight=False):
@@ -78,6 +77,7 @@ class Preprocessing(object):
     @staticmethod
     def get_graph_per_date(df, nodes):
         sample_dates = sorted(list(df['sample_datetime'].unique()))
+        print(sample_dates)
         graphs = []
 
         # # source_node_id_idx destination_node_id_idx source_process_name_idx
@@ -85,6 +85,8 @@ class Preprocessing(object):
             h = Preprocessing.get_graph_with_attributes(df[df['sample_datetime'] == date])
             g = nx.DiGraph((nx.induced_subgraph(h, nodes)))
             graphs.append(g)
+            for node in nodes:
+                g.add_node(node)
         return graphs
 
     @staticmethod

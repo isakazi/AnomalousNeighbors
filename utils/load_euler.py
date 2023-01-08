@@ -134,7 +134,7 @@ def load_vgrnn(dataset):
     assert dataset in datasets, \
         "Dataset %s not in allowed list: %s" % (dataset, str(datasets))
 
-    adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+    adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle.backup')
     with open(adj, 'rb') as f:
         fbytes = f.read()
 
@@ -177,7 +177,7 @@ def load_vgrnn(dataset):
 #     assert dataset in datasets, \
 #         "Dataset %s not in allowed list: %s" % (dataset, str(datasets))
 
-#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle.backup')
 #     dense_adj_list = []
 #     with open(adj, 'rb') as f:
 #         dense_adj_list = pickle.load(f)
@@ -217,7 +217,7 @@ def load_vgrnn(dataset):
 #     assert dataset in datasets, \
 #         "Dataset %s not in allowed list: %s" % (dataset, str(datasets))
 
-#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle.backup')
 #     dense_adj_list = []
 #     with open(adj, 'rb') as f:
 #         dense_adj_list = pickle.load(f)
@@ -255,7 +255,7 @@ def load_vgrnn(dataset):
 #     assert dataset in datasets, \
 #         "Dataset %s not in allowed list: %s" % (dataset, str(datasets))
 
-#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle.backup')
 #     dense_adj_list = []
 #     with open(adj, 'rb') as f:
 #         dense_adj_list = pickle.load(f)
@@ -293,7 +293,7 @@ def load_vgrnn(dataset):
 #     assert dataset in datasets, \
 #         "Dataset %s not in allowed list: %s" % (dataset, str(datasets))
 
-#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+#     adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle.backup')
 #     dense_adj_list = []
 #     with open(adj, 'rb') as f:
 #         dense_adj_list = pickle.load(f)
@@ -331,7 +331,7 @@ def load_vgrnn(dataset):
 ####### WITH WEIGHTS ######
 def load_gc_data(dataset_path, num_nodes=22234):
     print('in load gc 14')
-    # adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle')
+    # adj = os.path.join('/home/jupyter/Euler/benchmarks/data', dataset, 'adj_orig_dense_list.pickle.backup')
     # dense_adj_list = []
     with open(dataset_path, 'rb') as f:
         dense_adj_list = pickle.load(f)

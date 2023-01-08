@@ -130,4 +130,18 @@ dmypy.json
 
 .idea/
 
-data/adj_orig_dense_list.pickle
+data/adj_orig_dense_list.pickle.backup
+raw_data/test.csv
+
+data/*.pkl
+data/*.txt
+data/*.csv
+
+test.py
+.DS_Store
+*.json
+*.txt
+*.csv
+
+output/*.pkl
+output/*.backup
