@@ -43,6 +43,13 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
+        '--num_epochs',
+        type=int,
+        action='store',
+        default=150,
+        help='number of epochs for the training phase'
+    )
+    parser.add_argument(
         '-w', '--false_positive_weight',
         type=float,
         action='store',
@@ -52,28 +59,28 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Fetch the input data (train+test)
-    print("Fetching data")
-    subprocess.call(f"python3 euler_fetching.py --credentials {args.credentials} --start_date {args.start_date} --end_date {args.end_date}"
-                    f" --project_id {args.project_id} --customer_table_id {args.customer_table_id} --output {args.output}", shell=True)
-
-    # Preprocess input data
-    print("Preprocessing data")
-    dates = args.start_date + '_' + args.end_date
-    input_file_path = f'{args.output}/{args.customer_table_id}-{dates}.csv'
-    print(input_file_path)
-    last_training_day = (datetime.datetime.strptime(args.end_date, '%Y-%m-%d') - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-    print(last_training_day)
-    subprocess.call(
-        f"python3 euler_preprocessing.py --file {input_file_path} --date {last_training_day}"
-        f" --iana {args.iana} --output {args.output}", shell=True)
-
+    # print("Fetching data")
+    # subprocess.call(f"python3 euler_fetching.py --credentials {args.credentials} --start_date {args.start_date} --end_date {args.end_date}"
+    #                 f" --project_id {args.project_id} --customer_table_id {args.customer_table_id} --output {args.output}", shell=True)
+    #
+    # # Preprocess input data
+    # print("Preprocessing data")
+    # dates = args.start_date + '_' + args.end_date
+    # input_file_path = f'{args.output}/{args.customer_table_id}-{dates}.csv'
+    # print(input_file_path)
+    # last_training_day = (datetime.datetime.strptime(args.end_date, '%Y-%m-%d') - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    # print(last_training_day)
+    # subprocess.call(
+    #     f"python3 euler_preprocessing.py --file {input_file_path} --date {last_training_day}"
+    #     f" --iana {args.iana} --output {args.output}", shell=True)
+    #
     # Training
     print("Training phase")
     training_file = f'{args.output}/adj_orig_dense_list.pkl'
     num_nodes_file = f'{args.output}/num_nodes.txt'
     subprocess.call(
         f"python3 euler_training.py --file {training_file}"
-        f" --num_nodes_file {num_nodes_file} --output {args.output} --predict", shell=True)
+        f" --num_nodes_file {num_nodes_file} --output {args.output} --predict --num_epochs {args.num_epochs}", shell=True)
 
     # Evaluation
     print("Evaluation phase")

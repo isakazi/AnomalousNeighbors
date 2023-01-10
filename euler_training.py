@@ -22,7 +22,7 @@ TEST_TS = 1
 fmt_score = lambda x : 'AUC: %0.4f AP: %0.4f' % (x[0], x[1])
 
 
-def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01, num_test=0):
+def train(model, data, output_path, epochs=150, pred=False, nratio=1, lr=0.01):
     print(f'lr:{lr}, epochs: {epochs}')
     end_tr = data.T - TEST_TS
 
@@ -185,7 +185,13 @@ if __name__ == '__main__':
         action='store',
         help='directory where output is stored'
     )
-
+    parser.add_argument(
+        '--num_epochs',
+        type=int,
+        action='store',
+        default=150,
+        help='number of epochs for the training phase'
+    )
     '''
     0.02 is default as it's the best overall, but for the DBLP dataset, 
     lower LR's (0.005 in the paper) work better for new pred tasks
@@ -218,7 +224,7 @@ if __name__ == '__main__':
                 args.output,
                 pred=args.predict,
                 lr=args.lr,
-                num_test=num_test,
+                epochs=args.num_epochs,
             ) for num_test in range(NUM_TESTS)
         ]
 
