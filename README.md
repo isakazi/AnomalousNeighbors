@@ -21,8 +21,6 @@ anomalous neighbors from Hunt customers' data.
 Practical sample to run the pipeline:
 ``` python3 euler_full_pipeline.py -c etp-sa-warehouse-prod.json --start_date 2022-07-01 --end_date 2022-07-11 -p warehouse-prod --customer_table_id baa28e3c41bd443e --output gc_output --iana raw_data/iana.csv```
 
-Confirmed to work on MacOS 12.6.1, Python 3.9.12, should work on any UNIX-like system. 
-Windows should probably work as well, but I haven't tested it.
-
+Tested on MacOS 12.6.1 with Python 3.9.12.
 
     
