@@ -115,6 +115,4 @@ def get_optimal_cutoff(pscore, nscore, fw=0.5):
     fn = np.abs(tw * tpr - fw * (1 - fpr))
     best = np.argmin(fn, 0)
 
-    # print("Optimal cutoff %0.4f achieves TPR: %0.2f FPR: %0.2f on train data"
-    #       % (th[best], tpr[best], fpr[best]))
     return th[best]

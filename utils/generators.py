@@ -72,7 +72,7 @@ same as link prediction, just offset edge lists and embeddings by -1
 
 def link_prediction(data, partition_fn, zs, start=0, end=None,
                     include_tr=True, batched=False, nratio=1):
-    # Uses every edge in the next snap shot, so no partition fn needed
+    # Uses every edge in the next snapshot, so no partition fn needed
     p, n, z = link_detection(
         data, partition_fn, zs, start, end,
         include_tr, batched, nratio
@@ -83,13 +83,6 @@ def link_prediction(data, partition_fn, zs, start=0, end=None,
     z = z[:-1]
 
     return p, n, z
-
-
-'''
-Using embeddings from timestep t, predict links in timestep t+1
-same as link prediction, just offset edge lists and embeddings by -1
-'''
-
 
 
 '''

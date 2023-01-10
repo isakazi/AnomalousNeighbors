@@ -46,8 +46,7 @@ class Preprocessing(object):
         return df
 
     @staticmethod
-    def get_graph_with_attributes(df, source='source_node_id', target='destination_node_id', node_to_idx=None,
-                                  idx_to_node=None, process_to_idx=None, idx_to_process=None):
+    def get_graph_with_attributes(df):
         G = nx.from_pandas_edgelist(df,
                                     source='source_node_id_idx',
                                     target='flow_node_id_idx',

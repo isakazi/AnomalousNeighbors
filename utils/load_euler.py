@@ -109,8 +109,6 @@ def load_gc_data(dataset_path, num_nodes):
     for idx, adj in enumerate(dense_adj_list):
         eis.append(adj[0])
         ews_before.append(adj[1])
-        # ews.append(adj.edge_attr)
-        # adj = adj.edge_index
         splits.append(edge_tvt_split(adj[0]))
 
     ews = normalized(ews_before)

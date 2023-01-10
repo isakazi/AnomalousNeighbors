@@ -156,7 +156,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-f', '--file',
         action='store',
-        help='Input file for the training of Euler'
+        help='Input file for the training of Euler (list of graph objects, pickle file)'
     )
     parser.add_argument(
         '-n', '--num_nodes_file',
