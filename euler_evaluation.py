@@ -20,7 +20,6 @@ if __name__ == '__main__':
         action='store',
         help='test data to evaluate model'
     )
-
     parser.add_argument(
         '-c', '--csv_file',
         action='store',
@@ -38,11 +37,6 @@ if __name__ == '__main__':
         default=0.95,
         help='false positive weight, in the range of (0,1), higher values result in fewer FPs (with the risk of fewer TPs as well)'
     )
-    # parser.add_argument(
-    #     '-i', '--index_to_node',
-    #     action='store',
-    #     help='node to index pkl file path'
-    # )
     parser.add_argument(
         '-t',
         '--test_size',
@@ -80,20 +74,11 @@ if __name__ == '__main__':
     with torch.no_grad():
         gc_model.eval()
         TEST_TS = args.test_size
-        # print(f'all: {data.T}, end_tr:{data.T - TEST_TS}')
         end_tr = data.T - TEST_TS
         print(f'all: {data.T}, end_tr:{end_tr}')
-        # end_tr = TEST_TS
-
-        # zs = gc_model(data.x, data.eis, data.tr)[end_tr-1:]
-
-        #     all test data, as well as last training timestamp from train (?)
         zs = gc_model(data.x, data.eis, data.all, data.all_attributes)[end_tr - 1:]
-        print(f'{len(zs)}')
         p, n, z = generators.link_prediction(data, data.all, zs, start=end_tr - 1, include_tr=False)
-        # p,n,z = generators.link_prediction(data, data.all, zs, start=0, end = end_tr-1, include_tr=False)
         t, f = gc_model.score_fn(p,n,z, as_probs=True)
-        # t, f, tscores_backup, fscores_backup = custom_score_fn(gc_model, p, n, z, as_probs=True)
         dscores = get_score(t, f)
     my_optimal_cutoff = get_optimal_cutoff(t, f, fw=args.false_positive_weight)
     mask = t < my_optimal_cutoff
@@ -111,7 +96,6 @@ if __name__ == '__main__':
         sources.append(idx_to_node[id_1])
         destinations.append(idx_to_node[id_2])
         scores.append(t[i].item())
-        # print(id_1, id_2, '\n', idx_to_node[id_1], idx_to_node[id_2])
     delimiter = '!!!'
     print('start')
     source_port_process_dest=[]
@@ -135,48 +119,7 @@ if __name__ == '__main__':
         df_test[["destination_node_id", "source_process_name", "destination_port_mapped"]].apply(
             tuple, 1).isin(source_port_process_dest)]
     final_df = pd.concat([df_1, df_2])
-
-    # dfs = []
-    # for source, dest in zip(sources, destinations):
-    #     if delimiter in source and delimiter not in dest:
-    #         s = source.split(delimiter)[0]
-    #         p = source.split(delimiter)[1]
-    #         my_df = df_test[(df_test['source_node_id'] == dest)
-    #                         & (df_test['destination_port_mapped'] == int(p))
-    #                         & (df_test['source_process_name'] == s)]
-    #         if my_df.shape[0] == 0:
-    #             my_df = df_test[(df_test['destination_node_id'] == dest)
-    #                             & (df_test['destination_port_mapped'] == int(p))
-    #                             & (df_test['source_process_name'] == s)]
-    #     elif delimiter in dest and delimiter not in source:
-    #         d = dest.split(delimiter)[0]
-    #         p = dest.split(delimiter)[1]
-    #         my_df = df_test[(df_test['source_node_id'] == source)
-    #                         & (df_test['destination_port_mapped'] == int(p))
-    #                         & (df_test['source_process_name'] == d)]
-    #         if my_df.shape[0] == 0:
-    #             my_df = df_test[(df_test['destination_node_id'] == source)
-    #                             & (df_test['destination_port_mapped'] == int(p))
-    #                             & (df_test['source_process_name'] == d)]
-    #     else:
-    #         print('should not happen ', source, ', ', dest)
-    #     if my_df.shape[0] == 0:
-    #         print('should not happen')
-    #     else:
-    #         dfs.append(my_df)
-    #         my_df = None
-    # final_df = pd.concat(dfs)
-
-    print('end')
-    print(final_df.shape)
-    print(final_df.drop_duplicates().shape)
     final_df.drop_duplicates().to_csv(args.output+'/detections.csv', encoding='utf-8', index=False)
-
-
-
-# [-1,2,3,-2,3,4]
-
-# [-2,-1,2,3,3,4]
 
 
 

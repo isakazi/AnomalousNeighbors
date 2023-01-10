@@ -75,7 +75,6 @@ class EulerGCN(nn.Module):
         self.z_dim = z_dim
         self.drop = nn.Dropout(0.05)
 
-        print("using GAE")
         self.gcn = GAE(
             x_dim,
             hidden_dim=h_dim,
