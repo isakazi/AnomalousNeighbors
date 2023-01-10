@@ -192,20 +192,6 @@ if __name__ == '__main__':
         default=150,
         help='number of epochs for the training phase'
     )
-    '''
-    0.02 is default as it's the best overall, but for the DBLP dataset, 
-    lower LR's (0.005 in the paper) work better for new pred tasks
-    Optimal LRs are: 
-        +---------+-------+-------+-------+
-        | Dataset | Det   | Pred  | New   | 
-        +---------+-------+-------+-------+
-        | Enron   | 0.02  | 0.02  | 0.2   |
-        +---------+-------+-------+-------+
-        | FB      | 0.01  | 0.02  | 0.1   |
-        +---------+-------+-------+-------+
-        | DBLP    | 0.02  | 0.02  | 0.005 | 
-        +---------+-------+-------+-------+
-    '''
 
     args = parser.parse_args()
     outf = 'euler.txt'
